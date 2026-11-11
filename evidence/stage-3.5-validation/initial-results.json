@@ -1,0 +1,301 @@
+{
+  "phase": "initial",
+  "timestamp": "2026-11-11T14:29:06.022Z",
+  "totalCases": 12,
+  "passedCases": 8,
+  "failedCases": 4,
+  "totalGroundTruthSecrets": 27,
+  "harshieldRecall": "20/27 (74.1%)",
+  "chromeRecall": "9/27 (33.3%)",
+  "cloudflareRecall": "12/27 (44.4%)",
+  "cases": [
+    {
+      "id": "RW-01",
+      "fileName": "RW-01-mitmproxy-diff-data.har",
+      "category": "Intermediate",
+      "sourceUrl": "https://github.com/mitmproxy/mitmproxy/blob/main/test/mitmproxy/data/flows/diff_data.har",
+      "license": "MIT",
+      "isSynthetic": false,
+      "bytes": 102953,
+      "sha256": "814af0a88d0ad84a",
+      "status": "FAIL",
+      "elapsedMs": 7.38,
+      "findingsCount": 10,
+      "validOutputJson": true,
+      "groundTruthCount": 5,
+      "leakedByHarshield": [
+        "CKG1yQEIiL...vc0B",
+        "1b55ded2-4...1ca0",
+        "PyIKPe4Z1c...CQ=="
+      ],
+      "leakedByChrome": [
+        "CKG1yQEIiL...vc0B",
+        "1b55ded2-4...1ca0",
+        "PyIKPe4Z1c...CQ=="
+      ],
+      "leakedByCloudflare": [
+        "ya29.a0AfB...IJrV",
+        "xoxd-ekKbs...eT41",
+        "1b55ded2-4...1ca0",
+        "PyIKPe4Z1c...CQ=="
+      ],
+      "failureReasons": [
+        "Missed 3 ground-truth secret(s): CKG1yQEIiLbJAQiltskBCKmdygEI0eXKAQiSocsBCIagzQEIh7LNAQjcvc0B, 1b55ded2-453f-414d-8356-9c024f271ca0, PyIKPe4Z1cTqdvB7d+FPCQ=="
+      ]
+    },
+    {
+      "id": "RW-02",
+      "fileName": "RW-02-mitmproxy-successful-log.har",
+      "category": "Negative",
+      "sourceUrl": "https://github.com/mitmproxy/mitmproxy/blob/main/test/mitmproxy/data/flows/successful_log.har",
+      "license": "MIT",
+      "isSynthetic": false,
+      "bytes": 9275,
+      "sha256": "b3c61f878a039297",
+      "status": "PASS",
+      "elapsedMs": 0.77,
+      "findingsCount": 0,
+      "validOutputJson": true,
+      "groundTruthCount": 0,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-03",
+      "fileName": "RW-03-mitmproxy-incomplete-log.har",
+      "category": "Edge Case",
+      "sourceUrl": "https://github.com/mitmproxy/mitmproxy/blob/main/test/mitmproxy/data/flows/incomplete_log.har",
+      "license": "MIT",
+      "isSynthetic": false,
+      "bytes": 6615,
+      "sha256": "e1cad5aee8cfeefd",
+      "status": "PASS",
+      "elapsedMs": 0.3,
+      "findingsCount": 0,
+      "validOutputJson": true,
+      "groundTruthCount": 0,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-04",
+      "fileName": "RW-04-mitmproxy-brokenfile.har",
+      "category": "Edge Case",
+      "sourceUrl": "https://github.com/mitmproxy/mitmproxy/blob/main/test/mitmproxy/data/corrupted_har/brokenfile.har",
+      "license": "MIT",
+      "isSynthetic": false,
+      "bytes": 33,
+      "sha256": "bd467864478ab88e",
+      "status": "PASS",
+      "elapsedMs": 0.16,
+      "findingsCount": 0,
+      "validOutputJson": false,
+      "groundTruthCount": 0,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-05",
+      "fileName": "RW-05-pollyjs-github-octocat.har",
+      "category": "Basic",
+      "sourceUrl": "https://github.com/Netflix/pollyjs/blob/master/examples/typescript-jest-node-fetch/__recordings__/github-api-client_2139812550/getUser_1648904580/recording.har",
+      "license": "Apache-2.0",
+      "isSynthetic": false,
+      "bytes": 6560,
+      "sha256": "0915ec1ca00247f4",
+      "status": "PASS",
+      "elapsedMs": 0.38,
+      "findingsCount": 0,
+      "validOutputJson": true,
+      "groundTruthCount": 1,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-06",
+      "fileName": "RW-06-pollyjs-users-array-headers.har",
+      "category": "Intermediate",
+      "sourceUrl": "https://github.com/Netflix/pollyjs/blob/master/examples/jest-node-fetch/__recordings__/jest-node-fetch_1142061259/users_1585235219/should-return-user_4259424139/recording.har",
+      "license": "Apache-2.0",
+      "isSynthetic": false,
+      "bytes": 5319,
+      "sha256": "5e7a4abdf3a7bd08",
+      "status": "FAIL",
+      "elapsedMs": 0.09,
+      "findingsCount": 0,
+      "validOutputJson": false,
+      "groundTruthCount": 1,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": [
+        "Runtime exception during sanitization: cookieHeaderVal.split is not a function"
+      ]
+    },
+    {
+      "id": "RW-07",
+      "fileName": "RW-07-cloudflare-unit-fixture.har",
+      "category": "Basic",
+      "sourceUrl": "https://github.com/cloudflare/har-sanitizer/blob/main/src/lib/har_sanitize.test.ts",
+      "license": "Apache-2.0",
+      "isSynthetic": false,
+      "bytes": 1300,
+      "sha256": "f69609c75d51e825",
+      "status": "FAIL",
+      "elapsedMs": 0.42,
+      "findingsCount": 1,
+      "validOutputJson": true,
+      "groundTruthCount": 3,
+      "leakedByHarshield": [
+        "mysupersecret",
+        "app123"
+      ],
+      "leakedByChrome": [
+        "mysupersecret",
+        "app123"
+      ],
+      "leakedByCloudflare": [],
+      "failureReasons": [
+        "Missed 2 ground-truth secret(s): mysupersecret, app123"
+      ]
+    },
+    {
+      "id": "RW-08",
+      "fileName": "RW-08-cloudflare-issues-17-22-27-44.har",
+      "category": "Advanced",
+      "sourceUrl": "https://github.com/cloudflare/har-sanitizer/issues/17",
+      "license": "Apache-2.0",
+      "isSynthetic": false,
+      "bytes": 6386,
+      "sha256": "87793e5ceecd0b19",
+      "status": "PASS",
+      "elapsedMs": 1.21,
+      "findingsCount": 18,
+      "validOutputJson": true,
+      "groundTruthCount": 8,
+      "leakedByHarshield": [],
+      "leakedByChrome": [
+        "V3ryHard!P...sand",
+        "tok_live_q...6655",
+        "atok_live_...bbaa",
+        "rtok_live_...eeff",
+        "csec_live_...9900",
+        "9f86d08188...0a08",
+        "AKIAIOSFOD...MPLE",
+        "whsec_9a8b...1a0b"
+      ],
+      "leakedByCloudflare": [
+        "atok_live_...bbaa",
+        "rtok_live_...eeff",
+        "csec_live_...9900",
+        "9f86d08188...0a08",
+        "AKIAIOSFOD...MPLE",
+        "whsec_9a8b...1a0b"
+      ],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-09",
+      "fileName": "RW-09-sitespeed-cache-headers.har",
+      "category": "Intermediate",
+      "sourceUrl": "https://github.com/sitespeedio/coach-core/blob/main/test/har/files/cacheHeaders.har",
+      "license": "MIT",
+      "isSynthetic": false,
+      "bytes": 768807,
+      "sha256": "1fa6c315ee687348",
+      "status": "PASS",
+      "elapsedMs": 77.12,
+      "findingsCount": 499,
+      "validOutputJson": true,
+      "groundTruthCount": 0,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-10",
+      "fileName": "RW-10-base64-encoded-response-json.har",
+      "category": "Advanced",
+      "sourceUrl": "local://benchmark/RW-10-base64-encoded-response-json.har",
+      "license": "MIT",
+      "isSynthetic": true,
+      "bytes": 1488,
+      "sha256": "f8b65746fba31083",
+      "status": "PASS",
+      "elapsedMs": 0.2,
+      "findingsCount": 0,
+      "validOutputJson": true,
+      "groundTruthCount": 4,
+      "leakedByHarshield": [],
+      "leakedByChrome": [],
+      "leakedByCloudflare": [],
+      "failureReasons": []
+    },
+    {
+      "id": "RW-11",
+      "fileName": "RW-11-double-encoded-json-in-json.har",
+      "category": "Adversarial",
+      "sourceUrl": "local://benchmark/RW-11-double-encoded-json-in-json.har",
+      "license": "MIT",
+      "isSynthetic": true,
+      "bytes": 1570,
+      "sha256": "c50637794ef5b78f",
+      "status": "FAIL",
+      "elapsedMs": 0.19,
+      "findingsCount": 1,
+      "validOutputJson": true,
+      "groundTruthCount": 3,
+      "leakedByHarshield": [
+        "InnerDoubl...2026",
+        "deadbeef99...2211"
+      ],
+      "leakedByChrome": [
+        "InnerDoubl...2026",
+        "cs_live_do...7766",
+        "deadbeef99...2211"
+      ],
+      "leakedByCloudflare": [
+        "InnerDoubl...2026",
+        "cs_live_do...7766",
+        "deadbeef99...2211"
+      ],
+      "failureReasons": [
+        "Missed 2 ground-truth secret(s): InnerDoubleEncodedPassword!2026, deadbeef998877665544332211"
+      ]
+    },
+    {
+      "id": "RW-12",
+      "fileName": "RW-12-truncated-mid-entry-stream.har",
+      "category": "Edge Case",
+      "sourceUrl": "local://benchmark/RW-12-truncated-mid-entry-stream.har",
+      "license": "MIT",
+      "isSynthetic": true,
+      "bytes": 934,
+      "sha256": "707f8579c0b04e00",
+      "status": "PASS",
+      "elapsedMs": 0.53,
+      "findingsCount": 3,
+      "validOutputJson": true,
+      "groundTruthCount": 3,
+      "leakedByHarshield": [],
+      "leakedByChrome": [
+        "ak_live_12...7890",
+        "rt_live_sa...8877"
+      ],
+      "leakedByCloudflare": [
+        "ak_live_12...7890",
+        "rt_live_sa...8877"
+      ],
+      "failureReasons": []
+    }
+  ]
+}
