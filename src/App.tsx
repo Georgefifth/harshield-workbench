@@ -1247,7 +1247,7 @@ export default function App() {
                           </span>
                         </div>
                         <span className="font-mono text-[11px] text-[#94A3B8] shrink-0">
-                          {entry.time}ms
+                          {Math.round(entry.time || 0)}ms
                         </span>
                       </div>
 

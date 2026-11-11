@@ -95,7 +95,7 @@ export function generateMarkdownReport(result: SanitizationResult, traceTitle: s
   const entryRows = entries
     .map((e, i) => {
       const statusBadge = e.response.status >= 400 ? `**${e.response.status} ${e.response.statusText}**` : `${e.response.status}`;
-      return `| #${i + 1} | \`${e.request.method}\` | \`${e.request.url.slice(0, 72)}\` | ${statusBadge} | ${e.time} ms |`;
+      return `| #${i + 1} | \`${e.request.method}\` | \`${e.request.url.slice(0, 72)}\` | ${statusBadge} | ${Math.round(e.time || 0)} ms |`;
     })
     .join('\n');
 

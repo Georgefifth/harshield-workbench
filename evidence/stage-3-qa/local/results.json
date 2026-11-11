@@ -1,0 +1,178 @@
+{
+  "base": "http://127.0.0.1:4488/",
+  "browser": "firefox",
+  "headed": false,
+  "startedAt": "2026-11-11T14:39:09.306Z",
+  "finishedAt": "2026-11-11T14:39:17.154Z",
+  "summary": {
+    "total": 12,
+    "pass": 12,
+    "fail": 0
+  },
+  "results": [
+    {
+      "viewport": "desktop",
+      "id": "S1-first-visit-and-airlock",
+      "title": "First visit, Zero-Egress Airlock modal, Escape dismissal & Empty State Intake recovery",
+      "status": "pass",
+      "ms": 752,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S1-first-visit-and-airlock-01-landing-workbench-desktop.png",
+        "evidence/stage-3-qa/local/screens/S1-first-visit-and-airlock-02-empty-intake-bay-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "S2-core-sanitization-and-lineage",
+      "title": "End-to-end AST Sanitization, Dual-AST Diff & Referential Token Lineage (401 RACE)",
+      "status": "pass",
+      "ms": 406,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S2-core-sanitization-and-lineage-01-401-race-dual-ast-diff-desktop.png",
+        "evidence/stage-3-qa/local/screens/S2-core-sanitization-and-lineage-02-token-lineage-graph-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "S3-competitor-torture-and-modes",
+      "title": "Cloudflare Issues #17/#22/#27/#44 Torture Trace, Redaction Modes & Reload Persistence",
+      "status": "pass",
+      "ms": 465,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S3-competitor-torture-and-modes-01-cloudflare-torture-strict-mode-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "S4-repro-bundler-and-export",
+      "title": "Noise Stripping & Multi-Format Minimal Repro Bundler (cURL, Playwright, Markdown, .HAR)",
+      "status": "pass",
+      "ms": 516,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S4-repro-bundler-and-export-01-repro-exported-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "S5-error-recovery-and-validation",
+      "title": "Invalid Custom Regex Validation & Truncated HAR Stream Auto-Repair",
+      "status": "pass",
+      "ms": 853,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-01-invalid-regex-error-desktop.png",
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-02-truncated-har-error-card-desktop.png",
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-03-auto-repaired-workbench-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "S6-responsive-and-keyboard-a11y",
+      "title": "Responsive 390px Layout, Labeled Controls & Keyboard Navigation",
+      "status": "pass",
+      "ms": 206,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S6-responsive-and-keyboard-a11y-01-responsive-a11y-verified-desktop.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S1-first-visit-and-airlock",
+      "title": "First visit, Zero-Egress Airlock modal, Escape dismissal & Empty State Intake recovery",
+      "status": "pass",
+      "ms": 482,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S1-first-visit-and-airlock-01-landing-workbench-mobile.png",
+        "evidence/stage-3-qa/local/screens/S1-first-visit-and-airlock-02-empty-intake-bay-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S2-core-sanitization-and-lineage",
+      "title": "End-to-end AST Sanitization, Dual-AST Diff & Referential Token Lineage (401 RACE)",
+      "status": "pass",
+      "ms": 494,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S2-core-sanitization-and-lineage-01-401-race-dual-ast-diff-mobile.png",
+        "evidence/stage-3-qa/local/screens/S2-core-sanitization-and-lineage-02-token-lineage-graph-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S3-competitor-torture-and-modes",
+      "title": "Cloudflare Issues #17/#22/#27/#44 Torture Trace, Redaction Modes & Reload Persistence",
+      "status": "pass",
+      "ms": 579,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S3-competitor-torture-and-modes-01-cloudflare-torture-strict-mode-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S4-repro-bundler-and-export",
+      "title": "Noise Stripping & Multi-Format Minimal Repro Bundler (cURL, Playwright, Markdown, .HAR)",
+      "status": "pass",
+      "ms": 495,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S4-repro-bundler-and-export-01-repro-exported-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S5-error-recovery-and-validation",
+      "title": "Invalid Custom Regex Validation & Truncated HAR Stream Auto-Repair",
+      "status": "pass",
+      "ms": 803,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-01-invalid-regex-error-mobile.png",
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-02-truncated-har-error-card-mobile.png",
+        "evidence/stage-3-qa/local/screens/S5-error-recovery-and-validation-03-auto-repaired-workbench-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "S6-responsive-and-keyboard-a11y",
+      "title": "Responsive 390px Layout, Labeled Controls & Keyboard Navigation",
+      "status": "pass",
+      "ms": 186,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/S6-responsive-and-keyboard-a11y-01-responsive-a11y-verified-mobile.png"
+      ]
+    }
+  ]
+}

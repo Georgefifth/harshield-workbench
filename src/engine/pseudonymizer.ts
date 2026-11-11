@@ -174,4 +174,19 @@ export class Pseudonymizer {
       metadataSummary: metaSummary,
     };
   }
+
+  /**
+   * Scrubs any secret value (>= 8 chars) that was already discovered in structured fields
+   * if it also appears raw inside unstructured/binary-text payloads.
+   */
+  public scrubKnownSecretsInUnstructuredText(text: string): string {
+    if (!text) return text;
+    let out = text;
+    for (const [coreSecret, info] of this.valueToAlias.entries()) {
+      if (coreSecret.length >= 8 && out.includes(coreSecret)) {
+        out = out.split(coreSecret).join(info.alias);
+      }
+    }
+    return out;
+  }
 }

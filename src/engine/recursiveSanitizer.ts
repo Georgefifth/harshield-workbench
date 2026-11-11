@@ -34,6 +34,7 @@ const SENSITIVE_HEADER_NAMES = new Set([
   'proxy-authorization',
   'x-api-key',
   'x-client-key',
+  'x-client-data',
   'x-auth-token',
   'x-access-token',
   'x-csrf-token',
@@ -52,6 +53,8 @@ const SENSITIVE_KEY_EXACT_OR_SUFFIX = [
   'idtoken',
   'client_secret',
   'clientsecret',
+  'client_id',
+  'clientid',
   'password',
   'passwd',
   'passcode',
@@ -74,6 +77,8 @@ const SENSITIVE_KEY_EXACT_OR_SUFFIX = [
   'sessionkey',
   'session_token',
   'sessiontoken',
+  'session_id',
+  'sessionid',
   'oktastatetoken',
   'samlresponse',
   'samlrequest',
@@ -120,9 +125,9 @@ const NON_COOKIE_ATTRS = new Set([
   'partitioned',
 ]);
 
-// Known token prefixes (Stripe, AWS, OAuth, GitHub, etc.)
+// Known token prefixes (Stripe, AWS, Google OAuth/API, Slack, GitHub, etc.)
 const KNOWN_TOKEN_REGEX =
-  /\b(eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|(?:sk_live|sk_test|rk_live|pk_live|whsec|ak_live|cs_live|rt_live|atok_live|rtok_live|csec_live|tok_live|dl_tok|sk_vault|pm_card_visa_live|authcode|hmac)_[A-Za-z0-9_]{8,}|pi_[A-Za-z0-9]+_secret_[A-Za-z0-9]+|AKIA[0-9A-Z]{16})\b/g;
+  /\b(eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|(?:sk_live|sk_test|rk_live|pk_live|whsec|ak_live|cs_live|rt_live|atok_live|rtok_live|csec_live|tok_live|dl_tok|sk_vault|pm_card_visa_live|authcode|hmac)_[A-Za-z0-9_]{8,}|pi_[A-Za-z0-9]+_secret_[A-Za-z0-9]+|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|ya29\.[0-9A-Za-z_-]{20,}|xox[baprsd]-[0-9A-Za-z%-]{15,})\b/g;
 
 const EMAIL_REGEX = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 const IBAN_REGEX = /\b[A-Z]{2}\d{2}[A-Z0-9]{12,30}\b/g;
@@ -316,10 +321,11 @@ function runCompetitorAudit(originalHar: HarFile, findings: RedactionFinding[]):
 
   // Check for quoted key=value pairs inside header values which cause Cloudflare's regex #1/#3 to eat closing quotes
   for (const entry of originalHar.log.entries) {
-    for (const h of [...entry.request.headers, ...entry.response.headers]) {
-      if (h.value.includes('="') && /(token|auth|code|state|password)=/i.test(h.value)) {
+    for (const h of [...(entry.request?.headers || []), ...(entry.response?.headers || [])]) {
+      const hVal = Array.isArray(h.value) ? h.value.join('; ') : String(h.value ?? '');
+      if (hVal.includes('="') && /(token|auth|code|state|password)=/i.test(hVal)) {
         cfCorrupted = true;
-        cfReason = `Header "${h.name}" contains quoted inline key-value pairs (${h.value.slice(0, 36)}...), causing Cloudflare regex to consume closing JSON quotes (Issue #22).`;
+        cfReason = `Header "${h.name}" contains quoted inline key-value pairs (${hVal.slice(0, 36)}...), causing Cloudflare regex to consume closing JSON quotes (Issue #22).`;
         break;
       }
     }
@@ -521,7 +527,7 @@ export function sanitizeHarTrace(
   };
 
   /**
-   * Recursively walks any parsed JSON value (objects, arrays, primitives)
+   * Recursively walks any parsed JSON value (objects, arrays, primitives, and double-encoded JSON strings)
    */
   const walkJsonAst = (
     node: unknown,
@@ -532,6 +538,27 @@ export function sanitizeHarTrace(
   ): unknown => {
     if (node === null || node === undefined) return node;
     if (typeof node === 'string') {
+      const trimmed = node.trim();
+      if (
+        (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+        (trimmed.startsWith('[') && trimmed.endsWith(']'))
+      ) {
+        try {
+          const innerParsed = JSON.parse(trimmed);
+          if (innerParsed && typeof innerParsed === 'object') {
+            const sanitizedInner = walkJsonAst(
+              innerParsed,
+              entryIndex,
+              layer,
+              `${currentPath}(innerJson)`,
+              parentKey
+            );
+            return JSON.stringify(sanitizedInner);
+          }
+        } catch {
+          // Not valid inner JSON, continue to standard string sanitization
+        }
+      }
       return sanitizeStringValue(node, parentKey, entryIndex, layer, currentPath);
     }
     if (Array.isArray(node)) {
@@ -584,20 +611,30 @@ export function sanitizeHarTrace(
   };
 
   /**
-   * Sanitizes inline quoted key="value" pairs inside headers (e.g. X-Auth-Context in Issue #22)
+   * Sanitizes inline quoted key="value" or unquoted key=value&key2=value2 pairs inside custom headers
+   * (e.g. X-Auth-Context in Issue #22 and X-Custom-Auth in cloudflare/har-sanitizer unit test)
    */
-  const sanitizeInlineQuotedHeader = (
+  const sanitizeInlineHeaderKeyValues = (
     headerVal: string,
-    headerName: string,
+    _headerName: string,
     entryIndex: number,
     fieldPath: string
   ): string => {
-    return headerVal.replace(/([a-zA-Z0-9_-]+)="([^"]+)"/g, (full, k, v) => {
+    let out = headerVal.replace(/([a-zA-Z0-9_-]+)="([^"]+)"/g, (full, k, v) => {
       const cat = classifyByKeyName(k, v, config);
       if (!cat) return full;
       const rep = recordFinding(entryIndex, 'header', `${fieldPath}.${k}`, k, v, cat);
       return `${k}="${rep}"`;
     });
+
+    out = out.replace(/(^|[&\s;,])([a-zA-Z0-9_-]+)=([^"&\s;,]+)/g, (full, sep, k, v) => {
+      const cat = classifyByKeyName(k, v, config);
+      if (!cat) return full;
+      const rep = recordFinding(entryIndex, 'header', `${fieldPath}.${k}`, k, v, cat);
+      return `${sep}${k}=${rep}`;
+    });
+
+    return out;
   };
 
   const keptEntryIndices: number[] = [];
@@ -619,7 +656,15 @@ export function sanitizeHarTrace(
     // 1. Request & Response Headers
     if (config.redactHeadersAndCookies) {
       const processHeaders = (headers: HarHeader[], dir: 'request' | 'response') => {
+        if (!Array.isArray(headers)) return;
         headers.forEach((h, hIdx) => {
+          // Normalize non-standard array header values (e.g. Netflix/pollyjs v1.4.1 HAR format)
+          if (Array.isArray(h.value)) {
+            h.value = (h.value as unknown as string[]).join('; ');
+          } else if (typeof h.value !== 'string') {
+            h.value = String(h.value ?? '');
+          }
+
           const lower = h.name.toLowerCase();
           const path = `entries[${entryIndex}].${dir}.headers[${hIdx}](${h.name})`;
 
@@ -650,9 +695,9 @@ export function sanitizeHarTrace(
             h.value = recordFinding(entryIndex, 'header', path, h.name, h.value, cat);
             return;
           }
-          // Check for inline quoted key="val" secrets (e.g. X-Auth-Context in Issue #22)
-          if (h.value.includes('="')) {
-            h.value = sanitizeInlineQuotedHeader(h.value, h.name, entryIndex, path);
+          // Check for inline quoted key="val" or unquoted key=val secrets (e.g. Issue #22 & Cloudflare unit test)
+          if (h.value.includes('=')) {
+            h.value = sanitizeInlineHeaderKeyValues(h.value, h.name, entryIndex, path);
           }
         });
       };
@@ -792,36 +837,87 @@ export function sanitizeHarTrace(
           });
           post.text = sanitizedPairs.join('&');
           entry.request.bodySize = new TextEncoder().encode(post.text).length;
+        } else if (config.redactNestedJsonBodies) {
+          // Unstructured or binary-text request body (e.g. protobuf text in mitmproxy diff_data.har)
+          const beforeText = post.text;
+          post.text = sanitizeStringValue(
+            post.text,
+            'postData',
+            entryIndex,
+            'request-json',
+            `entries[${entryIndex}].request.postData.text`
+          );
+          post.text = pseudonymizer.scrubKnownSecretsInUnstructuredText(post.text);
+          if (post.text !== beforeText) {
+            entry.request.bodySize = new TextEncoder().encode(post.text).length;
+          }
         }
       }
     }
 
-    // 5. Response Content Body (JSON AST, embedded presigned URLs, OAuth tokens — Issues #27 & #44)
+    // 5. Response Content Body (JSON AST, Base64-encoded JSON, embedded presigned URLs, OAuth tokens — Issues #27 & #44)
     if (entry.response.content && typeof entry.response.content.text === 'string' && entry.response.content.text && config.redactNestedJsonBodies) {
       const respContent = entry.response.content;
       const rawRespText = respContent.text as string;
       const rText = rawRespText.trim();
       const rMime = (respContent.mimeType || '').toLowerCase();
-      const looksJson =
-        rMime.includes('json') ||
-        (rText.startsWith('{') && rText.endsWith('}')) ||
-        (rText.startsWith('[') && rText.endsWith(']'));
+      const isBase64 = (respContent.encoding || '').toLowerCase() === 'base64';
 
-      if (looksJson) {
+      if (isBase64 && rMime.includes('json')) {
         try {
-          const parsedResp = JSON.parse(rawRespText);
-          const sanitizedRespAst = walkJsonAst(
-            parsedResp,
+          const decodedStr =
+            typeof atob === 'function'
+              ? atob(rText)
+              : Buffer.from(rText, 'base64').toString('utf-8');
+          const parsedB64Json = JSON.parse(decodedStr);
+          const sanitizedB64Ast = walkJsonAst(
+            parsedB64Json,
             entryIndex,
             'response-json',
-            `entries[${entryIndex}].response.content.json`,
+            `entries[${entryIndex}].response.content.base64Json`,
             ''
           );
-          respContent.text = JSON.stringify(sanitizedRespAst, null, 2);
-          const byteLen = new TextEncoder().encode(respContent.text).length;
-          respContent.size = byteLen;
-          entry.response.bodySize = byteLen;
+          const cleanJsonStr = JSON.stringify(sanitizedB64Ast);
+          respContent.text =
+            typeof btoa === 'function'
+              ? btoa(cleanJsonStr)
+              : Buffer.from(cleanJsonStr, 'utf-8').toString('base64');
+          respContent.size = respContent.text.length;
+          entry.response.bodySize = respContent.text.length;
         } catch {
+          // keep raw if non-JSON binary base64
+        }
+      } else {
+        const looksJson =
+          rMime.includes('json') ||
+          (rText.startsWith('{') && rText.endsWith('}')) ||
+          (rText.startsWith('[') && rText.endsWith(']'));
+
+        if (looksJson) {
+          try {
+            const parsedResp = JSON.parse(rawRespText);
+            const sanitizedRespAst = walkJsonAst(
+              parsedResp,
+              entryIndex,
+              'response-json',
+              `entries[${entryIndex}].response.content.json`,
+              ''
+            );
+            respContent.text = JSON.stringify(sanitizedRespAst, null, 2);
+            const byteLen = new TextEncoder().encode(respContent.text).length;
+            respContent.size = byteLen;
+            entry.response.bodySize = byteLen;
+          } catch {
+            respContent.text = sanitizeStringValue(
+              rawRespText,
+              'responseText',
+              entryIndex,
+              'response-json',
+              `entries[${entryIndex}].response.content.text`
+            );
+          }
+        } else if ( !rText.startsWith('[binary') ) {
+          const beforeResp = respContent.text;
           respContent.text = sanitizeStringValue(
             rawRespText,
             'responseText',
@@ -829,6 +925,12 @@ export function sanitizeHarTrace(
             'response-json',
             `entries[${entryIndex}].response.content.text`
           );
+          respContent.text = pseudonymizer.scrubKnownSecretsInUnstructuredText(respContent.text);
+          if (respContent.text !== beforeResp) {
+            const byteLen = new TextEncoder().encode(respContent.text).length;
+            respContent.size = byteLen;
+            entry.response.bodySize = byteLen;
+          }
         }
       }
     }

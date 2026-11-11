@@ -108,4 +108,83 @@ describe('HARshield Workbench Core AST Sanitizer & Pseudonymizer', () => {
     expect(parsed.canAutoRepair).toBe(true);
     expect(parsed.repairedHar?.log.entries.length).toBe(1);
   });
+
+  it('handles Stage 3.5 real-world edge cases: Polly.JS array headers, Base64 JSON responses, and double-encoded JSON-in-JSON', () => {
+    const b64Json = Buffer.from(
+      JSON.stringify({ access_token: 'atok_b64_998877', email: 'b64@vault.io' }),
+      'utf-8'
+    ).toString('base64');
+
+    const edgeHar = {
+      log: {
+        version: '1.2',
+        creator: { name: 'Polly.JS', version: '1.4.1' },
+        entries: [
+          {
+            startedDateTime: '2026-11-11T00:00:00Z',
+            time: 12,
+            request: {
+              method: 'POST',
+              url: 'https://api.example.com/v1/envelope?session_id=sid_99887766',
+              httpVersion: 'HTTP/1.1',
+              cookies: [],
+              headers: [
+                {
+                  name: 'set-cookie',
+                  // Polly.JS v1.4.1 array header value dialect
+                  value: ['__cfduid=d9290fa7f69379aa; Path=/; HttpOnly'] as unknown as string,
+                },
+                {
+                  name: 'X-Custom-Auth',
+                  value: 'client_secret=mysupersecret&client_id=app123',
+                },
+              ],
+              queryString: [{ name: 'session_id', value: 'sid_99887766' }],
+              postData: {
+                mimeType: 'application/json',
+                text: JSON.stringify({
+                  inner: JSON.stringify({ password: 'DoubleEncodedSecret!99' }),
+                }),
+              },
+              headersSize: 100,
+              bodySize: 64,
+            },
+            response: {
+              status: 200,
+              statusText: 'OK',
+              httpVersion: 'HTTP/1.1',
+              cookies: [],
+              headers: [],
+              content: {
+                size: b64Json.length,
+                mimeType: 'application/json',
+                encoding: 'base64',
+                text: b64Json,
+              },
+              redirectURL: '',
+              headersSize: 50,
+              bodySize: b64Json.length,
+            },
+            cache: {},
+            timings: { send: 1, wait: 10, receive: 1 },
+          },
+        ],
+      },
+    };
+
+    const res = sanitizeHarTrace(edgeHar, DEFAULT_SANITIZATION_CONFIG);
+    expect(res.isJsonValid).toBe(true);
+    expect(res.sanitizedJsonString).not.toContain('d9290fa7f69379aa');
+    expect(res.sanitizedJsonString).not.toContain('mysupersecret');
+    expect(res.sanitizedJsonString).not.toContain('app123');
+    expect(res.sanitizedJsonString).not.toContain('sid_99887766');
+    expect(res.sanitizedJsonString).not.toContain('DoubleEncodedSecret!99');
+
+    const decodedResp = Buffer.from(
+      res.sanitizedHar.log.entries[0].response.content.text!,
+      'base64'
+    ).toString('utf-8');
+    expect(decodedResp).not.toContain('atok_b64_998877');
+    expect(decodedResp).not.toContain('b64@vault.io');
+  });
 });

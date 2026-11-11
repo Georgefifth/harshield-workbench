@@ -1,0 +1,58 @@
+{
+  "project_name": "HARshield Workbench",
+  "last_updated": "2026-11-11",
+  "facts": [
+    {
+      "fact_id": "fact_recall_benchmark",
+      "claim": "HARshield AST engine achieves 100.0% secret recall (30/30 ground-truth secrets) across 12 external and benchmark HAR 1.2 files, compared to 26.7% for Cloudflare har-sanitizer and 20.0% for Chrome 131 header scrubber",
+      "status": "verified",
+      "evidence": [
+        "../../Hack/silicon-valley-buildathon/evidence/stage-3.5-validation/report.md",
+        "../../Hack/silicon-valley-buildathon/evidence/stage-3.5-validation/post-fix-results.json"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_cloudflare_issues",
+      "claim": "Solves Cloudflare har-sanitizer open GitHub issues #17 (POST form fields), #22 (escaped quotes corrupting JSON), #27 (JSON response tokens), and #44 (presigned URL query params inside JSON bodies)",
+      "status": "verified",
+      "evidence": [
+        "../../Hack/silicon-valley-buildathon/evidence/stage-1-research.md",
+        "../../Hack/silicon-valley-buildathon/evidence/stage-2-build.md"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_referential_lineage",
+      "claim": "FNV-1a session pseudonymization maps identical credentials to deterministic aliases (JWT_TOKEN_#1 vs JWT_TOKEN_#2) across requests and responses to preserve 401 auth race debugging",
+      "status": "verified",
+      "evidence": [
+        "../../Hack/silicon-valley-buildathon/src/engine/pseudonymizer.ts",
+        "../../Hack/silicon-valley-buildathon/tests/sanitizer.test.ts"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_four_layer_ast",
+      "claim": "Four-layer client-side workbench: HAR 1.2 Stream Parser & Auto-Repair, Recursive MIME & Double-JSON AST Walker, FNV-1a Referential Pseudonymizer, and Minimal Repro Bundler",
+      "status": "verified",
+      "evidence": [
+        "../../Hack/silicon-valley-buildathon/src/engine/recursiveSanitizer.ts",
+        "../../Hack/silicon-valley-buildathon/src/engine/reproExporter.ts"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_unverified_binary_protobuf",
+      "claim": "Automatically decodes arbitrary schema-less binary gRPC Protobuf wire tags",
+      "status": "unverified",
+      "evidence": [],
+      "allowed_in_video": false,
+      "forbidden_phrases": [
+        "decodes arbitrary schema-less binary grpc",
+        "full binary protobuf wire tag decompiler",
+        "cloud llm redaction api"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "project_name": "HARshield Workbench",
+  "tagline": "Structure-Preserving HAR 1.2 AST Sanitizer & Minimal Repro Bundler",
+  "preset": "dark-premium",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "bgm": "cyber-pulse",
+  "scenes": [
+    {
+      "scene_id": "opening",
+      "kicker": "SILICON VALLEY BUILDATHON \u00b7 FORENSIC WORKBENCH",
+      "title": "HARshield \u00b7 Zero-Egress HAR 1.2 AST Sanitizer",
+      "subtitle": "100.0% secret recall across nested JSON, Form bodies, and Presigned URLs with 0 B network egress",
+      "duration": 10.54,
+      "narration": "HARshield Workbench sanitizes 'HAR 1.2' captures with 100.0% recall and zero network egress.",
+      "visual_type": "opening_title",
+      "fact_ids": [
+        "fact_recall_benchmark",
+        "fact_referential_lineage"
+      ],
+      "assets": [
+        "images/harshield_hero.svg"
+      ],
+      "badges": [
+        "100.0% SECRET RECALL (30/30)",
+        "0 B NETWORK EGRESS AIRLOCK",
+        "REFERENTIAL ALIASING (JWT_#1)"
+      ],
+      "animations": [],
+      "footer": "https://georgefifth.github.io/harshield-workbench/",
+      "audio_file": "audio/harshield_opening.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 9.24,
+          "text": "HARshield Workbench sanitizes 'HAR 1.2' captures with 100.0% recall and zero network egress."
+        }
+      ]
+    },
+    {
+      "scene_id": "problem_flow",
+      "kicker": "COMPETITIVE FAILURE ANALYSIS",
+      "title": "Why Existing HAR Scrubbers Leak Credentials",
+      "subtitle": "Header-only scrubbing and raw string regexes fail on nested JSON payloads and auth races",
+      "duration": 9.37,
+      "narration": "Chrome only scrubs headers at 20.0% recall, while the Cloudflare regex misses 'JSON bodies' and corrupts quotes.",
+      "visual_type": "problem_flow",
+      "fact_ids": [
+        "fact_cloudflare_issues",
+        "fact_recall_benchmark"
+      ],
+      "diagram": {
+        "nodes": [
+          {
+            "id": "raw_har",
+            "label": "Raw Browser .HAR",
+            "sublabel": "Headers + JSON + URLs",
+            "category": "input",
+            "metric": "30 Secrets"
+          },
+          {
+            "id": "chrome_scrubber",
+            "label": "Chrome 131 Scrubber",
+            "sublabel": "Header-only blindness",
+            "category": "bottleneck",
+            "metric": "20.0% Recall"
+          },
+          {
+            "id": "cf_regex",
+            "label": "Cloudflare Regex",
+            "sublabel": "Breaks JSON #22 \u00b7 Misses #27",
+            "category": "bottleneck",
+            "metric": "26.7% Recall"
+          },
+          {
+            "id": "flat_redacted",
+            "label": "Flat [REDACTED]",
+            "sublabel": "Destroys 401 token lineage",
+            "category": "output",
+            "metric": "0 Lineage"
+          }
+        ],
+        "edges": [
+          {
+            "from": "raw_har",
+            "to": "chrome_scrubber",
+            "label": "IGNORES BODIES",
+            "status": "bottleneck"
+          },
+          {
+            "from": "chrome_scrubber",
+            "to": "cf_regex",
+            "label": "QUOTE CORRUPTION #22",
+            "status": "bottleneck"
+          },
+          {
+            "from": "cf_regex",
+            "to": "flat_redacted",
+            "label": "BLIND TO 401 RACE",
+            "status": "bottleneck"
+          }
+        ]
+      },
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "chrome_scrubber",
+          "text": "Misses 80% of Nested Secrets",
+          "start": 0.8,
+          "duration": 3.4
+        },
+        {
+          "type": "highlight",
+          "target": "cf_regex",
+          "text": "Issues #17, #22, #27 & #44",
+          "start": 4.3,
+          "duration": 3.6
+        }
+      ],
+      "footer": "Evidence: github.com/cloudflare/har-sanitizer/issues/17, #22, #27, #44",
+      "audio_file": "audio/harshield_problem_flow.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 8.07,
+          "text": "Chrome only scrubs headers at 20.0% recall, while the Cloudflare regex misses 'JSON bodies' and corrupts quotes."
+        }
+      ]
+    },
+    {
+      "scene_id": "exploded_architecture",
+      "kicker": "CLIENT-SIDE AST ARCHITECTURE",
+      "title": "Four-Layer Recursive AST & Lineage Engine",
+      "subtitle": "Zero-egress parsing, multi-layer MIME decoding, FNV-1a aliasing, and repro code synthesis",
+      "duration": 10.26,
+      "narration": "Our four-layer 'AST Engine' unwraps nested JSON, Form bodies, and 'presigned URLs' while preserving token lineage.",
+      "visual_type": "exploded_view",
+      "fact_ids": [
+        "fact_four_layer_ast",
+        "fact_referential_lineage"
+      ],
+      "exploded_parts": [
+        {
+          "id": "har_stream_parser",
+          "name": "Layer 1 \u00b7 HAR 1.2 Parser & Auto-Repair",
+          "spec": "TRUNCATED STREAM RECOVERY",
+          "role": "Validates HAR 1.2 schema and salvages complete entries from cut-off browser exports",
+          "layer": -1.6
+        },
+        {
+          "id": "recursive_mime_ast",
+          "name": "Layer 2 \u00b7 Recursive MIME & JSON AST Walker",
+          "spec": "JSON \u00b7 FORM \u00b7 BASE64 \u00b7 DOUBLE-JSON",
+          "role": "Traverses nested JSON objects, form tails (#17), response tokens (#27), and S3 URLs (#44)",
+          "layer": -0.5
+        },
+        {
+          "id": "fnv1a_pseudonymizer",
+          "name": "Layer 3 \u00b7 FNV-1a Referential Pseudonymizer",
+          "spec": "SESSION-SALTED TOKEN LINEAGE",
+          "role": "Maps identical tokens across headers and JSON bodies to JWT_TOKEN_#1 vs JWT_TOKEN_#2",
+          "layer": 0.6
+        },
+        {
+          "id": "repro_bundler",
+          "name": "Layer 4 \u00b7 Minimal Repro & Noise Bundler",
+          "spec": "CURL \u00b7 PLAYWRIGHT \u00b7 MARKDOWN",
+          "role": "Strips static font/telemetry noise and compiles executable reproduction scripts",
+          "layer": 1.7
+        }
+      ],
+      "animations": [
+        {
+          "type": "explode",
+          "target": "assembly",
+          "start": 0.4,
+          "duration": 8.0
+        },
+        {
+          "type": "highlight",
+          "target": "recursive_mime_ast",
+          "text": "Unwraps JSON, Base64 & Presigned URLs",
+          "start": 1.0,
+          "duration": 3.5
+        },
+        {
+          "type": "label",
+          "target": "fnv1a_pseudonymizer",
+          "text": "Preserves Cross-Request 401 Auth Lineage",
+          "start": 4.6,
+          "duration": 3.5
+        }
+      ],
+      "footer": "100% Client-Side TypeScript \u00b7 Zero External API Calls",
+      "audio_file": "audio/harshield_exploded_architecture.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 8.96,
+          "text": "Our four-layer 'AST Engine' unwraps nested JSON, Form bodies, and 'presigned URLs' while preserving token lineage."
+        }
+      ]
+    },
+    {
+      "scene_id": "live_demo_lineage",
+      "kicker": "LIVE PROTOTYPE CAPTURE \u00b7 OAUTH 401 RACE",
+      "title": "Diagnosing a 401 Token Rotation Race",
+      "subtitle": "Referential aliasing proves Entry #6 sent stale JWT_TOKEN_#1 after Entry #4 rotated to JWT_TOKEN_#2",
+      "duration": 11.53,
+      "narration": "In this live capture, HARshield flags 21 secrets and links 'JWT Token 1' to a '401 Unauthorized' payout race.",
+      "visual_type": "real_footage_with_annotations",
+      "fact_ids": [
+        "fact_referential_lineage"
+      ],
+      "assets": [
+        "footage/live_live_demo_lineage.mp4"
+      ],
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "LINEAGE RIBBON",
+          "text": "JWT_TOKEN_#1 Flagged as 401 RACE",
+          "subtext": "3 hops correlated across login & payout",
+          "start": 0.6,
+          "duration": 3.6,
+          "x": 58,
+          "y": 32,
+          "w": 36,
+          "h": 14
+        },
+        {
+          "type": "label",
+          "target": "DUAL-AST DIFF",
+          "text": "Raw JWT Replaced with Bearer JWT_TOKEN_#1",
+          "subtext": "100% valid JSON \u00b7 0 raw leaks",
+          "start": 4.4,
+          "duration": 3.8,
+          "x": 66,
+          "y": 64,
+          "w": 38,
+          "h": 28
+        }
+      ],
+      "footer": "Live Capture from https://georgefifth.github.io/harshield-workbench/",
+      "audio_file": "audio/harshield_live_demo_lineage.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 10.23,
+          "text": "In this live capture, HARshield flags 21 secrets and links 'JWT Token 1' to a '401 Unauthorized' payout race."
+        }
+      ]
+    },
+    {
+      "scene_id": "live_demo_repro",
+      "kicker": "LIVE PROTOTYPE CAPTURE \u00b7 TORTURE SUITE & REPRO",
+      "title": "Cloudflare Torture Suite & Repro Export",
+      "subtitle": "Catching nested S3 signatures (#44), generating Playwright API tests, and repairing truncated streams",
+      "duration": 11.34,
+      "narration": "On the Cloudflare torture trace, HARshield catches all 18 secrets, exports 'Playwright' specs, and repairs truncated streams.",
+      "visual_type": "real_footage_with_annotations",
+      "fact_ids": [
+        "fact_cloudflare_issues",
+        "fact_four_layer_ast"
+      ],
+      "assets": [
+        "footage/live_live_demo_repro.mp4"
+      ],
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "COMPETITOR GAP",
+          "text": "Cloudflare Regex Corrupts JSON (#22)",
+          "subtext": "HARshield catches all 18 secrets cleanly",
+          "start": 0.6,
+          "duration": 3.8,
+          "x": 38,
+          "y": 19,
+          "w": 24,
+          "h": 14
+        },
+        {
+          "type": "label",
+          "target": "PLAYWRIGHT SPEC",
+          "text": "Auto-Generated Playwright & Stream Repair",
+          "subtext": "Ready-to-run API test with 0 raw secrets",
+          "start": 4.6,
+          "duration": 4.2,
+          "x": 64,
+          "y": 62,
+          "w": 40,
+          "h": 30
+        }
+      ],
+      "footer": "Verified on Cloudflare Issues #17, #22, #27, #44",
+      "audio_file": "audio/harshield_live_demo_repro.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 10.04,
+          "text": "On the Cloudflare torture trace, HARshield catches all 18 secrets, exports 'Playwright' specs, and repairs truncated streams."
+        }
+      ]
+    },
+    {
+      "scene_id": "validation_benchmark",
+      "kicker": "STAGE 3.5 REAL-WORLD VALIDATION",
+      "title": "12-Dataset Benchmark: mitmproxy & Polly.JS",
+      "subtitle": "Tested against authentic open-source HAR captures across 6 difficulty tiers",
+      "duration": 14.65,
+      "narration": "Across 12 real-world 'mitmproxy' and 'Polly.JS' traces, HARshield achieved 100.0% recall in 78.4ms with zero false positives.",
+      "visual_type": "technical_validation",
+      "fact_ids": [
+        "fact_recall_benchmark"
+      ],
+      "metrics": [
+        {
+          "id": "recall",
+          "label": "Ground-Truth Secret Recall (30 Secrets)",
+          "value": 100.0,
+          "unit": "%",
+          "baseline": 26.7,
+          "status": "verified",
+          "note": "HARshield 30/30 vs Cloudflare Regex 8/30 (26.7%) & Chrome 6/30 (20.0%)"
+        },
+        {
+          "id": "json_validity",
+          "label": "Dataset Pass & Valid JSON Rate (12 HARs)",
+          "value": 100.0,
+          "unit": "%",
+          "baseline": 33.3,
+          "status": "verified",
+          "note": "0 false positives on negative traces (RW-02, RW-03); fixes Polly.JS array headers"
+        },
+        {
+          "id": "latency",
+          "label": "768 KB Trace AST Sanitization Latency",
+          "value": 78.4,
+          "unit": "ms",
+          "baseline": 120.0,
+          "status": "verified",
+          "note": "Measured on sitespeedio/coach-core 50-entry browser capture (RW-09)"
+        }
+      ],
+      "limitations": [
+        "Polly.JS node-fetch hex-chunked gzip arrays (_isBinary: true) require external gunzip before AST walk",
+        "Binary Protobuf payloads scrub correlated tokens & emails but do not decode schema-less wire tags"
+      ],
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "recall",
+          "text": "100.0% Recall vs 26.7% Cloudflare Regex",
+          "start": 1.0,
+          "duration": 6.2
+        }
+      ],
+      "footer": "Evidence: evidence/stage-3.5-validation/post-fix-results.json",
+      "audio_file": "audio/harshield_validation_benchmark.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 13.35,
+          "text": "Across 12 real-world 'mitmproxy' and 'Polly.JS' traces, HARshield achieved 100.0% recall in 78.4ms with zero false positives."
+        }
+      ]
+    },
+    {
+      "scene_id": "closing",
+      "kicker": "SILICON VALLEY BUILDATHON SUBMISSION",
+      "title": "HARshield \u00b7 Safe Network Repros in Seconds",
+      "subtitle": "100% Client-Side AST Engine \u00b7 Referential Token Lineage \u00b7 Multi-Format Repro Bundler",
+      "duration": 10.45,
+      "narration": "Try HARshield Workbench live in your browser\u2014zero leaks, 100% valid JSON, and instant repro bundles.",
+      "visual_type": "closing_summary",
+      "fact_ids": [
+        "fact_recall_benchmark",
+        "fact_referential_lineage"
+      ],
+      "badges": [
+        "RECALL::100.0% Across 12 Real-World HARs",
+        "PRIVACY::0 B Egress Local V8 Airlock",
+        "EXPORT::.HAR \u00b7 cURL \u00b7 Playwright \u00b7 Markdown"
+      ],
+      "footer": "https://georgefifth.github.io/harshield-workbench/",
+      "audio_file": "audio/harshield_closing.mp3",
+      "captions": [
+        {
+          "start": 0.1,
+          "end": 9.15,
+          "text": "Try HARshield Workbench live in your browser\u2014zero leaks, 100% valid JSON, and instant repro bundles."
+        }
+      ]
+    }
+  ]
+}
