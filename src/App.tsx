@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -118,13 +118,39 @@ function getMethodBadgeClass(method: string): string {
   }
 }
 
-export default function App() {
-  const [activePresetId, setActivePresetId] = useState<string>(PRESET_TRACES[0].id);
-  const [activeHar, setActiveHar] = useState<HarFile | null>(PRESET_TRACES[0].har);
-  const [traceTitle, setTraceTitle] = useState<string>(PRESET_TRACES[0].name);
-  const [diagnosticNote, setDiagnosticNote] = useState<string>(PRESET_TRACES[0].diagnosticGoal);
+const STORAGE_PRESET_KEY = 'harshield.activePresetId.v1';
+const STORAGE_CONFIG_KEY = 'harshield.config.v1';
 
-  const [config, setConfig] = useState<SanitizationConfig>(DEFAULT_SANITIZATION_CONFIG);
+export default function App() {
+  const initialPreset = useMemo(() => {
+    try {
+      const savedId = localStorage.getItem(STORAGE_PRESET_KEY);
+      if (savedId) {
+        const found = PRESET_TRACES.find((p) => p.id === savedId);
+        if (found) return found;
+      }
+    } catch {
+      // ignore storage errors
+    }
+    return PRESET_TRACES[0];
+  }, []);
+
+  const [activePresetId, setActivePresetId] = useState<string>(initialPreset.id);
+  const [activeHar, setActiveHar] = useState<HarFile | null>(initialPreset.har);
+  const [traceTitle, setTraceTitle] = useState<string>(initialPreset.name);
+  const [diagnosticNote, setDiagnosticNote] = useState<string>(initialPreset.diagnosticGoal);
+
+  const [config, setConfig] = useState<SanitizationConfig>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_CONFIG_KEY);
+      if (saved) {
+        return { ...DEFAULT_SANITIZATION_CONFIG, ...JSON.parse(saved) };
+      }
+    } catch {
+      // ignore
+    }
+    return DEFAULT_SANITIZATION_CONFIG;
+  });
   const [selectedOrigEntryIdx, setSelectedOrigEntryIdx] = useState<number>(0);
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>('ast-diff');
   const [mobileStation, setMobileStation] = useState<MobileStation>('waterfall');
@@ -147,6 +173,36 @@ export default function App() {
   const [showAirlockModal, setShowAirlockModal] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    try {
+      if (activePresetId && PRESET_TRACES.some((p) => p.id === activePresetId)) {
+        localStorage.setItem(STORAGE_PRESET_KEY, activePresetId);
+      }
+    } catch {
+      // ignore
+    }
+  }, [activePresetId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(config));
+    } catch {
+      // ignore
+    }
+  }, [config]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowPasteModal(false);
+        setShowAirlockModal(false);
+        setParseError(null);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const sanitizationResult = useMemo(() => {
     if (!activeHar) return null;
